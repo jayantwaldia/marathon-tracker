@@ -12,7 +12,7 @@ A 26-week marathon training plan tracker for the Ladakh Marathon (Sep 13, 2026).
 
 ## Live Site
 
-Hosted on GitHub Pages: **[Your URL will appear here after setup]**
+Hosted on GitHub Pages: **https://jayantwaldia.github.io/marathon-tracker/**
 
 ## Local Development
 
