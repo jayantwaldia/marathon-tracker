@@ -361,7 +361,7 @@
         <textarea id="logNotes" placeholder="Aches, weather, how it went..."></textarea>
       </div>
     </div>
-    <div class="modal-actions">
+    <div class="modal-actions" id="modalActions">
       <button class="btn-secondary" onclick="closeModal()">Cancel</button>
       <button class="btn-primary" onclick="saveLog()">Save & Check Off ✓</button>
     </div>
@@ -733,6 +733,7 @@ function openLog(wNum, dayIdx) {
   }
   modalTarget = { wNum, dayIdx };
   const log = state[wNum]?.[dayIdx] || {};
+  const isDone = log.done;
   document.getElementById('modalTitle').textContent = wo.name;
   document.getElementById('modalSubtitle').textContent = `Week ${wNum} · ${wo.day}`;
   document.getElementById('logKm').value = log.km || '';
@@ -740,6 +741,12 @@ function openLog(wNum, dayIdx) {
   document.getElementById('logNotes').value = log.notes || '';
   selectedMood = log.mood || null;
   document.querySelectorAll('.mood-btn').forEach(b => b.classList.toggle('selected', b.dataset.mood === selectedMood));
+  const actionsEl = document.getElementById('modalActions');
+  if (isDone) {
+    actionsEl.innerHTML = '<button class="btn-secondary" onclick="uncheckLog()">Uncheck</button><button class="btn-primary" onclick="saveLog()">Update</button>';
+  } else {
+    actionsEl.innerHTML = '<button class="btn-secondary" onclick="closeModal()">Cancel</button><button class="btn-primary" onclick="saveLog()">Save & Check Off ✓</button>';
+  }
   document.getElementById('logModal').classList.add('open');
 }
 
@@ -759,6 +766,23 @@ function saveLog() {
   if (!state[wNum]) state[wNum] = {};
   state[wNum][dayIdx] = {
     done: true,
+    km: document.getElementById('logKm').value,
+    time: document.getElementById('logTime').value,
+    mood: selectedMood,
+    notes: document.getElementById('logNotes').value,
+  };
+  saveState();
+  closeModal();
+  renderAll();
+}
+
+function uncheckLog() {
+  if (!modalTarget) return;
+  const { wNum, dayIdx } = modalTarget;
+  if (!state[wNum]) state[wNum] = {};
+  const existing = state[wNum][dayIdx] || {};
+  state[wNum][dayIdx] = {
+    done: false,
     km: document.getElementById('logKm').value,
     time: document.getElementById('logTime').value,
     mood: selectedMood,
