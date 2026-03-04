@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Ladakh 3:45">
-<title>Ladakh 3:45 — Marathon Tracker</title>
+<meta name="apple-mobile-web-app-title" content="Race Tracker 2026">
+<title>Race Tracker 2026 — Ladakh & Delhi</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -269,8 +269,8 @@
 <body>
 
 <div class="header">
-  <div class="header-title">🏔️ Ladakh <span>3:45</span></div>
-  <div class="header-meta" id="headerMeta">Sep 13, 2026<br>Loading...</div>
+  <div class="header-title">🏔️ <span>3:45</span> · 🏙️ <span style="color:var(--accent2)">1:30</span></div>
+  <div class="header-meta" id="headerMeta">2 races · Loading...</div>
 </div>
 
 <!-- VIEW: PLAN -->
@@ -309,7 +309,7 @@
     <div class="section-title">Your Progress</div>
     <div class="countdown-card">
       <div class="countdown-num" id="daysToRace">—</div>
-      <div class="countdown-label">days until Ladakh Marathon · Sep 13, 2026</div>
+      <div class="countdown-label" id="raceCountdownLabel">days until next race</div>
     </div>
     <div class="stats-grid">
       <div class="big-stat"><div><span class="big-stat-num" id="totalWorkouts">0</span><span class="big-stat-unit">runs</span></div><div class="big-stat-label">Completed</div></div>
@@ -320,9 +320,11 @@
     <div class="phase-progress" id="phaseProgressView"></div>
     <div style="margin-top:20px">
       <div class="section-title" style="font-size:16px">Race Day Tips</div>
-      <div class="race-tip"><div class="race-tip-title">🎯 Target Pace</div><div class="race-tip-body">5:20/km · Km 0–10 at 5:35–5:40 · Km 10–21 at 5:25 · Km 21+ at goal pace. Start slower than feels right — altitude punishes early effort.</div></div>
-      <div class="race-tip"><div class="race-tip-title">🏔️ Arrive by Sep 3</div><div class="race-tip-body">10 days acclimatization minimum. First 3 days: no running. Drink 3–4L water daily. Expect 10–15% slower paces in Leh.</div></div>
-      <div class="race-tip"><div class="race-tip-title">⛽ Nutrition</div><div class="race-tip-body">Gel every 35–40 min from km 10. 60–75g carbs/hr. Drink at every aid station. Never try new gels on race day.</div></div>
+      <div class="race-tip"><div class="race-tip-title">🎯 Ladakh Target Pace</div><div class="race-tip-body">5:20/km · Km 0–10 at 5:35–5:40 · Km 10–21 at 5:25 · Km 21+ at goal pace. Start slower than feels right — altitude punishes early effort.</div></div>
+      <div class="race-tip"><div class="race-tip-title">🏔️ Arrive Ladakh by Sep 3</div><div class="race-tip-body">10 days acclimatization minimum. First 3 days: no running. Drink 3–4L water daily. Expect 10–15% slower paces in Leh.</div></div>
+      <div class="race-tip"><div class="race-tip-title">🏙️ Delhi HM Target Pace</div><div class="race-tip-body">4:16/km for sub 1:30 · First 5 km at 4:22–4:25 to settle · Then lock into 4:15–4:18 · Your marathon fitness will carry you — trust the legs.</div></div>
+      <div class="race-tip"><div class="race-tip-title">💪 Post-Marathon Recovery Rule</div><div class="race-tip-body">1 easy day for every mile raced = ~26 days. Weeks 27–28 are sacred recovery. Do NOT skip rest even if you feel fine — the damage is invisible.</div></div>
+      <div class="race-tip"><div class="race-tip-title">⛽ Nutrition</div><div class="race-tip-body">Marathon: gel every 35–40 min from km 10. Half: 1–2 gels total (km 7 and km 14). Never try new gels on race day.</div></div>
     </div>
   </div>
 </div>
@@ -381,7 +383,8 @@ const PHASES = [
   { id: 1, name: "Base", full: "Phase 1: Base Building", color: "#4ecdc4", weeks: [1,2,3,4,5,6] },
   { id: 2, name: "Aerobic", full: "Phase 2: Aerobic Dev", color: "#45b7d1", weeks: [7,8,9,10,11,12] },
   { id: 3, name: "Race Prep", full: "Phase 3: Race-Specific", color: "#ff6b35", weeks: [13,14,15,16,17,18,19] },
-  { id: 4, name: "Taper", full: "Phase 4: Taper", color: "#a78bfa", weeks: [20,21,22,23,24,25,26] },
+  { id: 4, name: "Taper", full: "Phase 4: Marathon Taper", color: "#a78bfa", weeks: [20,21,22,23,24,25,26] },
+  { id: 5, name: "Delhi HM", full: "Phase 5: Delhi Half Marathon", color: "#f72585", weeks: [27,28,29,30,31] },
 ];
 
 const WEEKS = [
@@ -465,7 +468,23 @@ const WEEKS = [
     {day:"MON",name:"Rest",type:"rest"},{day:"TUE",name:"Easy 5 km",type:"easy"},{day:"WED",name:"Easy 5 km",type:"easy"},{day:"THU",name:"Easy 4 km",type:"easy"},{day:"FRI",name:"Rest",type:"rest"},{day:"SAT",name:"Easy 10 km",type:"easy"},{day:"SUN",name:"Rest",type:"rest"}
   ]},
   { w:26, label:"Race Week 🏁", date:"Sep 7", cutback:true, workouts:[
-    {day:"MON",name:"Rest",type:"rest"},{day:"TUE",name:"Easy 4 km",type:"easy"},{day:"WED",name:"Easy 3 km + strides",type:"easy"},{day:"THU",name:"Rest",type:"rest"},{day:"FRI",name:"Easy 3 km",type:"easy"},{day:"SAT",name:"Rest — Carb load",type:"rest"},{day:"SUN",name:"🏆 RACE DAY",type:"race"}
+    {day:"MON",name:"Rest",type:"rest"},{day:"TUE",name:"Easy 4 km",type:"easy"},{day:"WED",name:"Easy 3 km + strides",type:"easy"},{day:"THU",name:"Rest",type:"rest"},{day:"FRI",name:"Easy 3 km",type:"easy"},{day:"SAT",name:"Rest — Carb load",type:"rest"},{day:"SUN",name:"🏆 LADAKH RACE DAY",type:"race"}
+  ]},
+  // Phase 5 — Delhi Half Marathon
+  { w:27, label:"Recovery · Post-Marathon", date:"Sep 14", cutback:true, workouts:[
+    {day:"MON",name:"Rest — full rest",type:"rest"},{day:"TUE",name:"Rest — walk 20 min only",type:"rest"},{day:"WED",name:"Rest — walk 20 min",type:"rest"},{day:"THU",name:"Rest",type:"rest"},{day:"FRI",name:"Easy walk / light stretch",type:"rest"},{day:"SAT",name:"Easy jog 4 km (if no soreness)",type:"easy"},{day:"SUN",name:"Rest",type:"rest"}
+  ]},
+  { w:28, label:"Return to Running", date:"Sep 21", cutback:false, workouts:[
+    {day:"MON",name:"Rest",type:"rest"},{day:"TUE",name:"Easy 6 km — very easy",type:"easy"},{day:"WED",name:"Easy 7 km",type:"easy"},{day:"THU",name:"4×800m @ HM pace (4:16/km)",type:"interval"},{day:"FRI",name:"Rest",type:"rest"},{day:"SAT",name:"Easy 12 km",type:"easy"},{day:"SUN",name:"Easy 5 km",type:"easy"}
+  ]},
+  { w:29, label:"HM Sharpening", date:"Sep 28", cutback:false, workouts:[
+    {day:"MON",name:"Rest",type:"rest"},{day:"TUE",name:"Easy 7 km + strides",type:"easy"},{day:"WED",name:"6×800m @ HM pace (4:16/km)",type:"interval"},{day:"THU",name:"Easy 8 km",type:"easy"},{day:"FRI",name:"Rest",type:"rest"},{day:"SAT",name:"HM Pace run 14 km (8 km @ 4:20/km)",type:"pace"},{day:"SUN",name:"Easy 5 km",type:"easy"}
+  ]},
+  { w:30, label:"HM Final Sharpening", date:"Oct 5", cutback:false, workouts:[
+    {day:"MON",name:"Rest",type:"rest"},{day:"TUE",name:"Easy 6 km + strides",type:"easy"},{day:"WED",name:"4×1km @ HM pace (4:16/km)",type:"interval"},{day:"THU",name:"Easy 6 km",type:"easy"},{day:"FRI",name:"Rest",type:"rest"},{day:"SAT",name:"Easy 10 km",type:"easy"},{day:"SUN",name:"Rest",type:"rest"}
+  ]},
+  { w:31, label:"HM Race Week 🏁", date:"Oct 12", cutback:true, workouts:[
+    {day:"MON",name:"Rest",type:"rest"},{day:"TUE",name:"Easy 5 km",type:"easy"},{day:"WED",name:"Easy 4 km + 4 strides",type:"easy"},{day:"THU",name:"Rest",type:"rest"},{day:"FRI",name:"Easy 3 km — shake out",type:"easy"},{day:"SAT",name:"Rest — Carb load",type:"rest"},{day:"SUN",name:"🏆 DELHI HALF MARATHON",type:"race"}
   ]},
 ];
 
@@ -478,6 +497,7 @@ const TYPE_COLORS = {
   pace: { bg: "#2a100f", text: "#e85d2c" },
   cross: { bg: "#0f2a1a", text: "#34c759" },
   race: { bg: "#2a0a0a", text: "#e85d2c" },
+  interval: { bg: "#2a1028", text: "#f72585" },
 };
 
 // ═══════════════════════════════════════════
@@ -497,9 +517,11 @@ function saveState() { localStorage.setItem('ladakh_state', JSON.stringify(state
 // UTILS
 // ═══════════════════════════════════════════
 function daysToRace() {
-  const race = new Date('2026-09-13');
+  const marathon = new Date('2026-09-13');
+  const half = new Date('2026-10-18');
   const now = new Date();
-  return Math.max(0, Math.ceil((race - now) / 86400000));
+  if (now <= marathon) return { days: Math.max(0, Math.ceil((marathon - now) / 86400000)), label: 'Ladakh Marathon', date: 'Sep 13' };
+  return { days: Math.max(0, Math.ceil((half - now) / 86400000)), label: 'Delhi Half', date: 'Oct 18' };
 }
 
 function currentWeekNum() {
@@ -507,7 +529,7 @@ function currentWeekNum() {
   const now = new Date();
   const diff = Math.floor((now - start) / 86400000);
   const w = Math.floor(diff / 7) + 1;
-  return Math.max(1, Math.min(26, w));
+  return Math.max(1, Math.min(31, w));
 }
 
 function getPhaseFor(wNum) {
@@ -540,7 +562,7 @@ function totalWorkoutsDone() {
 
 function weeksCompleted() {
   let n = 0;
-  for (let w = 1; w <= 26; w++) {
+  for (let w = 1; w <= 31; w++) {
     const { done, total } = weekCompletion(w);
     if (total > 0 && done === total) n++;
   }
@@ -551,14 +573,14 @@ function weeksCompleted() {
 // RENDER
 // ═══════════════════════════════════════════
 function renderHeader() {
-  const d = daysToRace();
-  document.getElementById('headerMeta').innerHTML = `Sep 13, 2026<br><span style="color:var(--accent)">${d} days left</span>`;
+  const r = daysToRace();
+  document.getElementById('headerMeta').innerHTML = `${r.label} · ${r.date}<br><span style="color:var(--accent)">${r.days} days left</span>`;
 }
 
 function renderProgress() {
   const done = weeksCompleted();
-  const pct = Math.round(done / 26 * 100);
-  document.getElementById('progressText').textContent = `${done} of 26 weeks complete`;
+  const pct = Math.round(done / 31 * 100);
+  document.getElementById('progressText').textContent = `${done} of 31 weeks complete`;
   document.getElementById('progressPct').textContent = pct + '%';
   document.getElementById('progressFill').style.width = pct + '%';
 }
@@ -659,13 +681,14 @@ function renderWeeks() {
 }
 
 function renderStats() {
-  document.getElementById('daysToRace').textContent = daysToRace();
+  const r = daysToRace();
+  document.getElementById('daysToRace').textContent = r.days;
+  document.getElementById('raceCountdownLabel').textContent = `days until ${r.label} · ${r.label === 'Ladakh Marathon' ? 'Sep 13' : 'Oct 18'}, 2026`;
   document.getElementById('totalWorkouts').textContent = totalWorkoutsDone();
   document.getElementById('totalKm').textContent = totalKmLogged();
   document.getElementById('totalWeeks').textContent = weeksCompleted();
 
-  // streak (simple: consecutive done workouts)
-  let streak = 0, best = 0, cur = 0;
+  let best = 0, cur = 0;
   WEEKS.forEach(wData => {
     wData.workouts.forEach((wo, i) => {
       if (wo.type === 'rest') return;
